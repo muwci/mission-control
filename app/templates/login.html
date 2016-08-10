@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
   <p>
-  This is the login page
+  {% if error %}
+  Your last login was unsuccessful. The server reponded with:
+  {{ error }}
+  {% endif %}
+
+  <form method="post" name="login_box" action="">
+    <b>Username</b><br>
+    <input type="text" name="username">
+
+    <br><br>
+
+    <input type="submit">
+  </form>
   </p>
 {% endblock %}
