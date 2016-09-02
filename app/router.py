@@ -21,7 +21,13 @@ user_data_reader = csv.reader(open(USER_DATA_FILE))
 headers = next(user_data_reader)
 user_data = {}
 for username, name, account_type in user_data_reader:
-    user_data[username] = {'name':name, 'acc':account_type}
+    user_data[username] = {'name':name,
+                            'acc':account_type,
+                            'username':username}
+
+student_scores = {username:0 for username in user_data \
+                    if user_data[username]['acc'] =='STU'}
+
 #
 # BAD CODE ENDS HERE.
 # (though what comes next is not particularly remarkable.)
@@ -54,6 +60,30 @@ def dashboard_router(username):
         return render_template("dashboard.html", title=page_title,\
                 user=user_data[username])
 
+
+@app.route('/user/<username>/dashboard/add_score/', methods=['GET', 'POST'])
+def score_adder(username):
+    if user_data[username]['acc'] != 'FAC':
+        return render_template("non_response.html",
+                title="Error: Not Authorized",
+                user=user_data[username])
+    if request.method == 'POST':
+        print(request.form)
+        for form_field in request.form:
+            if form_field.split('_')[0] == 'score':
+                student_name = form_field.split('_')[1]
+                student_scores[student_name] = request.form[form_field]
+        page_title = "{} - View Student Scores".format(username)
+        sent_scores = [
+            {   'name':user_data[username]['name'],
+                'score':student_scores[username]}
+                for username in student_scores]
+        return render_template("show_scores.html", title=page_title, scores=sent_scores, user=user_data[username])
+    else:
+        page_title = "{} - Add Scores".format(username)
+        student_list = [user_data[uname] for uname in user_data \
+                            if user_data[uname]['acc'] == 'STU']
+        return render_template("add_scores.html", title=page_title, students=student_list, user=user_data[username])
 
 # THESE ROUTERS HAVE RECEIVED ENLIGHTENMENT.
 # FOR THEY DON'T OVER COMPLICATE THINGS.
