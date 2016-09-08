@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>
+  {{ user.name }} : Add scores.
+</h3>
+
+<form method="post" name="score_updater" action="">
+    {% for student in students %}
+        <b>{{ student.name }}</b>:
+        <input type="text" name="score_{{ student.username }}">
+        <br>
+    {% endfor %}
+    <br>
+    <input type="submit">
+</form>
+
+{% endblock %}
