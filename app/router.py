@@ -32,7 +32,6 @@ student_scores = {username:0 for username in user_data \
 # BAD CODE ENDS HERE.
 # (though what comes next is not particularly remarkable.)
 
-
 @app.route('/login/', methods=['GET', 'POST'])
 def login_router():
     if request.method == 'POST':
@@ -84,6 +83,17 @@ def score_adder(username):
         student_list = [user_data[uname] for uname in user_data \
                             if user_data[uname]['acc'] == 'STU']
         return render_template("add_scores.html", title=page_title, students=student_list, user=user_data[username])
+
+@app.route('/user/<username>/dashboard/view_score/')
+def score_viewer(username):
+    if user_data[username]['acc'] != 'STU':
+        return render_template("non_response.html",
+            title="Error: Not Authorized",
+            user=user_data['username'])
+    return render_template("view_score.html",
+        title="{} - View scores".format(username),
+        user=user_data[username],
+        scores=student_scores[username])
 
 # THESE ROUTERS HAVE RECEIVED ENLIGHTENMENT.
 # FOR THEY DON'T OVER COMPLICATE THINGS.
