@@ -1,5 +1,73 @@
 {% extends "base.html" %}
 {% block wrapper %}
-THE VIEW SCORES PAGE
+{% if studentlist %}
+    <div class="page-header">
+        <h1>Mission Control Transcript Viewer</h1>
+        <p>
+            Here is a list of students. Use the 'View transcript' link to 
+            view their transcripts.
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr><th>Name</th><th>Email</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for student in studentlist %}
+                        <tr>
+                            <td><b>{{ student.name }}</b></td>
+                            <td>{{ student.email }}</td> 
+                            <td>
+                                <a href="/dashboard/view/{{ student.link }}/">
+                                View transcript
+                                </a>
+                            </td>     
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% else %}{% if scores %}
+    <div class="alert alert-info" role="alert">
+        <strong>This is a web transcript!</strong>
+        Given below is a preview of your transcript. If you are planning on printing/archiving
+        this, consider generating a PDF instaed. You use the 'Download' button at
+        the bottom or the 'Generate transcript' option from the top right drop down menu to do
+        this. 
+    </div>
+    <div class="page-header">
+        <h2><strong>The Mahindra Project Based Diploma Transcript</strong></h2>
+        <br>
+        <h4><b>Name:</b> </h4>
+    </div>
+    <div class="row">
+    {% for cnum, score in scores %}
+        <h4><b>Criteria {{ cnum }}</b>: {{ score }}</h4>
+    {% endfor %}
+    </div>
+    <hr>
+    <div class="row">
+        <p>
+        <a href="/dashboard/generate/" type="button" class="btn btn-primary">Download</a>
+        <a href="/dashboard/rubric/" type="button" class="btn btn-default">View Rubric</a>
+        {% if session['acctype'] == 'FAC' %}
+        <a href="/dashboard/view/" type="button" class="btn btn-link">
+            Back to student list
+        </a>
+        {% endif %}
+        </p>
+    </div>
+{% else %}
+    <div class="alert alert-danger" role="alert">
+        <strong>Oh snap! Something went very wrong somewhere.</strong>
+        You were not  supposed to see this message. Something has broken mission control massively
+        from the inside. Please get in touch with Cary Reid and Abhik Pal so that they can look
+        into this.
+    </div>
+{% endif %}{% endif %}
 <!-- VIEWSCORES.HTML TEST STRING -->
 {% endblock wrapper %}

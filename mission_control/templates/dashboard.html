@@ -11,16 +11,15 @@
     <ul class="nav nav-pills" role="tablist">
         {% if session['acctype'] == 'FAC' %}
         <!-- FACULTY ACCOUNT ACTIONS -->
+        <li role="presentation"><a href="{{ url_for('dashboard') }}students/">Student list</a></li>
+        <li role="presentation"><a href="{{ url_for('dashboard') }}edit/">Edit student scores</a></li>
+        <li role="presentation"><a href="{{ url_for('dashboard') }}view/">View student scores</a></li>
+        <li role="presentation"><a href="{{ url_for('dashboard') }}generate/">Generate transcripts</a></li>
         {% elif session['acctype'] == 'STU' %}
         <!-- STUDENT ACCOUNT ACTIONS -->
+        <li><a href="{{ url_for('dashboard') }}view/">View scores</a></li>
+        <li><a href="{{ url_for('dashboard') }}generate/">Generate transcript</a></li>
         {% endif %}
-        <!-- COMMON ACCOUNT ACTIONS -->
-        <li role="presentation">
-            <a href="{{ url_for('settings') }}">Account Settings</a>
-        </li>
-        <li role="presentation">
-            <a href="{{ url_for('help') }}">Mission Control Help</a>
-        </li>
     </ul>
 
 <!-- DASHBOARD.HTML TEST STRING -->
