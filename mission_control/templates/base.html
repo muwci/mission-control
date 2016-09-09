@@ -1,0 +1,89 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+    {% if title %}
+        {{ title }} | Mission Control
+    {% else %}
+        Mission Control
+    {% endif %}
+{% endblock %}
+
+{% block styles %}
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bootstrap-theme.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='mission_control_styles.css') }}" rel="stylesheet" >
+{% endblock styles %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <a class="navbar-brand" href="{{ url_for('index') }}">Mission Control</a>
+            </div>
+
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    {% if session['logged_in'] %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                {{ session['username'] }}<span class="caret"></span>
+                            </a>
+                            
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">Actions</li>
+                                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                                
+                                {% if session['acctype'] == 'FAC' %}
+                                    <!-- FACULTY ACCOUNT DROPDOWN LINKS -->
+                                {% elif session['acctype'] == 'STU' %}
+                                    <!-- STUDENT ACCOUNT DROPDOWN LINKS -->
+                                {% endif %}
+                                
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown-header">Account</li>
+                                <li><a href="{{ url_for('settings') }}/">Settings</a></li>
+                                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                                <li><a href="{{ url_for('help') }}">Help</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock navbar %}
+
+{% block content %}
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+            <div class="alert {% if message.type %}alert-{{ message.type }}{% endif %}">
+                {% if message.title %}
+                <strong>{{ message.title }}</strong>
+                {% endif %}
+                {{ message.content }}
+            </div>
+        {% endfor %}
+
+        {% block wrapper %}{% endblock wrapper %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            {% block footer %}{% endblock footer %}
+        </div>
+    </footer>
+{%- endblock %}
+
+{% block scripts %}
+    <script src="{{url_for('static', filename='jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename='bootstrap.min.js')}}"></script>
+{% endblock scripts %}

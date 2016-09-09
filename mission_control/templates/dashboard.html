@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block wrapper %}
+    <div class="page-header"> 
+        <h1>Welcome to your Dashboard!</h1>
+        
+        <p>You will now be able to do whatever you should be able to do.
+        Use the links below or click on  your username on the top right to
+        begin doing whatever it is that you should be doing.</p>
+    </div>
+
+    <ul class="nav nav-pills" role="tablist">
+        {% if session['acctype'] == 'FAC' %}
+        <!-- FACULTY ACCOUNT ACTIONS -->
+        {% elif session['acctype'] == 'STU' %}
+        <!-- STUDENT ACCOUNT ACTIONS -->
+        {% endif %}
+        <!-- COMMON ACCOUNT ACTIONS -->
+        <li role="presentation">
+            <a href="{{ url_for('settings') }}">Account Settings</a>
+        </li>
+        <li role="presentation">
+            <a href="{{ url_for('help') }}">Mission Control Help</a>
+        </li>
+    </ul>
+
+<!-- DASHBOARD.HTML TEST STRING -->
+{% endblock wrapper %}

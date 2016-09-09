@@ -1,0 +1,17 @@
+from flask import Flask
+from flask_bootstrap import Bootstrap
+
+# configuration
+DATABASE = '/tmp/mission_control.db'
+DEBUG = True
+SECRET_KEY = 'development key'
+
+# flask app
+app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
+Bootstrap(app)
+
+import mission_control.database
+import mission_control.views
