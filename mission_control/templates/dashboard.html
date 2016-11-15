@@ -1,25 +1,36 @@
 {% extends "base.html" %}
 {% block wrapper %}
-    <div class="page-header"> 
-        <h1>Welcome to your Dashboard!</h1>
-        
-        <p>You will now be able to do whatever you should be able to do.
-        Use the links below or click on  your username on the top right to
-        begin doing whatever it is that you should be doing.</p>
+    <div class="row">
+        <h2>Mission Control Dashboard</h1>
+        <p class="lead">
+            The links below (and on the top right dropdown) provide access to
+            actions available to your account type. You are logged in as a <b>
+            {% if session['acctype'] == 'STU' %}
+            student
+            {% elif session['acctype'] == 'FAC' %}
+            faculty
+            {% else %}
+            guest
+            {% endif %}
+            </b>
+        </p>
+        <div class="btn-group" role="group" aria-label="Dashboard actions">
+          {% if session['acctype'] == 'FAC' %}
+        <!-- FACULTY ACCOUNT ACTIONS -->
+        <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('dashboard') }}students/';">Student list</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('dashboard') }}edit/';">Edit student scores</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('dashboard') }}view/';">View student scores</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('dashboard') }}generate/';">Generate transcripts</button>
+        {% elif session['acctype'] == 'STU' %}
+        <!-- STUDENT ACCOUNT ACTIONS -->
+        <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('dashboard') }}view/';">View scores</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('dashboard') }}generate/';">Generate transcript</button>
+        {% endif %}
+        </div>
     </div>
 
     <ul class="nav nav-pills" role="tablist">
-        {% if session['acctype'] == 'FAC' %}
-        <!-- FACULTY ACCOUNT ACTIONS -->
-        <li role="presentation"><a href="{{ url_for('dashboard') }}students/">Student list</a></li>
-        <li role="presentation"><a href="{{ url_for('dashboard') }}edit/">Edit student scores</a></li>
-        <li role="presentation"><a href="{{ url_for('dashboard') }}view/">View student scores</a></li>
-        <li role="presentation"><a href="{{ url_for('dashboard') }}generate/">Generate transcripts</a></li>
-        {% elif session['acctype'] == 'STU' %}
-        <!-- STUDENT ACCOUNT ACTIONS -->
-        <li><a href="{{ url_for('dashboard') }}view/">View scores</a></li>
-        <li><a href="{{ url_for('dashboard') }}generate/">Generate transcript</a></li>
-        {% endif %}
+        
     </ul>
 
 <!-- DASHBOARD.HTML TEST STRING -->
