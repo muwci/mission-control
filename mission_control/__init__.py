@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO
 
 # configuration
@@ -13,8 +12,6 @@ app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 socketio = SocketIO(app, async_mode=None)
-
-Bootstrap(app)
 
 import mission_control.database
 import mission_control.views

@@ -1,12 +1,28 @@
 {% extends "base.html" %}
 {% block wrapper %}
-    <div class="jumbotron">
-        <h1>Welcome to Mission Control!</h1>
-        <p>Use the login button up there on the navigation bar to go to your dashboard.</p>
+   <div class="mission-control-index">
+      <div class="container">
+        <h1>Welcome to Mission Control</h1>
+        <p>Use the dropdown on the top-left to access the list of actions or login.</p>
+        <p>
+            {% if session['logged_in'] %}
+            <a  class="btn btn-primary btn-lg"
+                href="{{ url_for('dashboard') }}"
+                role="button">Dashboard &raquo;</a>
+            {% else %}
+            <a  class="btn btn-primary btn-lg"
+                href="{{ url_for('login')}}"
+                role="button">Login &raquo;</a>
+            {% endif %}
+        </p>
+      </div>
+      <hr>
+      <footer>
+        <p class="text-muted">
+        Mission Control was created by Abhik Pal for UWC Mahindra College.
+        Source available on <a href="#">Github</a>.
+        </p>
+        <!-- INDEX.HTML TEST STRING -->
+      </footer>
     </div>
 {% endblock wrapper %}
-
-{% block footer %}
-    Mission Control was created by Abhik Pal for UWC Mahindra College. 
-<!-- INDEX.HTML TEST STRING -->
-{% endblock footer %}
