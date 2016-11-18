@@ -3,6 +3,8 @@ from flask import request, session, g, redirect, url_for, \
 
 from mission_control import app
 
+from rubric.convertor import hierarchy
+from rubric.convertor import name_map
 
 @app.route('/')
 def index():
@@ -125,7 +127,26 @@ def view_student_score(student):
 def edit_scores():
     # only a faculty account can add scores.
     if session['logged_in'] and session['acctype'] == 'FAC':
-        return render_template('add_scores.html')
+        cursor = g.db.execute('''
+                select useremail,name from users where acctype='STU'
+                ''')
+        studentlist = [{
+            'name': s_name,
+            'email': s_email,
+            'link': s_email.split('@')[0]
+            } for s_email, s_name in list(cursor.fetchall())]
+        return render_template('add_scores_student_list.html',
+                                studentlist=studentlist)
+    return abort(403)
+
+@app.route('/dashboard/edit/<student>/')
+def edit_student_score(student):
+    if session['logged_in'] and (session['acctype'] == 'FAC'):
+        foo = list(sorted(hierarchy.node_dict.keys()))
+        print(foo)
+        return render_template("add_scores.html",
+                                structure=foo,
+                                name_map=name_map)
     return abort(403)
 
 

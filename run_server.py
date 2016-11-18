@@ -3,5 +3,4 @@ from mission_control import socketio
 
 import mission_control.database
 
-mission_control.database.init_db()
-socketio.run(app, debug=True)
+socketio.run(app, debug=True, host="0.0.0.0")

@@ -2,7 +2,7 @@ from flask import Flask
 from flask_socketio import SocketIO
 
 # configuration
-DATABASE = '/tmp/mission_control.db'
+DATABASE = './rubric/data/mission_control.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 
@@ -11,7 +11,10 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
+app.jinja_env.globals.update(len=len)
+
 socketio = SocketIO(app, async_mode=None)
 
 import mission_control.database
 import mission_control.views
+
