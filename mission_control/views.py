@@ -5,6 +5,7 @@ from mission_control import app
 
 from rubric.convertor import hierarchy
 from rubric.convertor import name_map
+from rubric.utils import fill_tree
 
 @app.route('/')
 def index():
@@ -82,12 +83,13 @@ def view_scores():
         # a student is directly led to their view score page.
         if session['acctype'] == 'STU':
             cursor = g.db.execute('''
-                select scoreC1,scoreC2,scoreC3,scoreC4 
-                    from scores where studentemail=?
-                ''', (session['email'],))
+                select * from grades where username='{}'
+                '''.format(session['email'][:-1*len('@muwci.net')]))
             scores = list(cursor.fetchone())
             return render_template('view_scores.html',
-                                   scores=zip(range(len(scores)), scores))
+                                   scores=zip(list(sorted(name_map.keys())),
+                                            scores[1:]),
+                                   name_map=name_map)
         # a faculty memeber is led to a page listing all the students.
         if session['acctype'] == 'FAC':
             cursor = g.db.execute('''
@@ -110,12 +112,13 @@ def view_student_score(student):
         # view the required page
         if (session['acctype'] == 'FAC'):
             cursor = g.db.execute('''
-                select scoreC1,scoreC2,scoreC3,scoreC4 
-                    from scores where studentemail=?
-                ''', ('{}@muwci.net'.format(student),))
+                select * from grades where username='{}'
+                '''.format(student))
             scores = list(cursor.fetchone())
             return render_template('view_scores.html',
-                                   scores=zip(range(len(scores)), scores))
+                                   scores=zip(list(sorted(name_map.keys())),
+                                            scores[1:]),
+                                   name_map=name_map)
         # if a student tries to access this page, we redirect them to their
         # view scores page
         if session['acctype'] == 'STU':
@@ -139,14 +142,35 @@ def edit_scores():
                                 studentlist=studentlist)
     return abort(403)
 
-@app.route('/dashboard/edit/<student>/')
+@app.route('/dashboard/edit/<student>/', methods=['GET', 'POST'])
 def edit_student_score(student):
     if session['logged_in'] and (session['acctype'] == 'FAC'):
-        foo = list(sorted(hierarchy.node_dict.keys()))
-        print(foo)
-        return render_template("add_scores.html",
-                                structure=foo,
-                                name_map=name_map)
+        if request.method == 'GET':
+            foo = list(sorted(hierarchy.node_dict.keys()))
+            # print(foo)
+            return render_template("add_scores.html",
+                                    structure=foo,
+                                    name_map=name_map)
+        else:
+            # print(request.form)
+            filled_tree = fill_tree(request.form)
+            db_query = "UPDATE grades set {} WHERE username='{}'".format(
+                ', '.join(["%s=%s" % (ky, filled_tree[ky])
+                    for ky in filled_tree]),
+                student)  
+            # print(db_query)
+            # query_value_string = '\'' + student + '\', ' + ', '.join([str(filled_tree[nm]) for nm in sorted(filled_tree.keys())])
+
+            # cursor = g.db.execute('''
+                # insert into grades values ({})
+            # '''.format(query_value_string))
+            cursor = g.db.execute(db_query)
+            g.db.commit()
+            flash({
+                'content': "Scores updated for {}".format(student),
+                'type': 'success'
+            })
+            return redirect('/dashboard/edit/')
     return abort(403)
 
 

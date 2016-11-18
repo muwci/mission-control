@@ -41,12 +41,12 @@
     </div>
     <div class="page-header">
         <h2><strong>The Mahindra Project Based Diploma Transcript</strong></h2>
-        <br>
-        <h4><b>Name:</b> </h4>
     </div>
     <div class="row">
     {% for cnum, score in scores %}
-        <h4><b>Criteria {{ cnum }}</b>: {{ score }}</h4>
+        {% if len(cnum) == 2 %}
+            <h4><small>{{ name_map[cnum] }}:</small>{{ score }}</h4>
+        {% endif %}
     {% endfor %}
     </div>
     <hr>

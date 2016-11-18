@@ -18,7 +18,7 @@ create table users (
 
 drop table if exists grades;
 create table grades (
-    email text primary key,
+    username text primary key,
     C1 integer,
     C11 integer,
     C111 integer,
@@ -102,3 +102,6 @@ INSERT INTO users VALUES ('rbbit@muwci.net', 'R. Bbit','rabbits', 'STU');
 
 INSERT INTO scores VALUES ('graffe@muwci.net', 5, 6, 7, 5, "the neck! the neck!");
 INSERT INTO scores VALUES ('rbbit@muwci.net', 7, 5, 4, 5, "led Alice down that hole thing");
+
+INSERT INTO grades (username) VALUES ('graffe');
+INSERT INTO grades (username) VALUES ('rbbit');
