@@ -1,36 +1,24 @@
 {% extends "base.html" %}
 {% block wrapper %}
 {% if studentlist %}
-    <div class="page-header">
-        <h1>Mission Control Transcript Viewer</h1>
-        <p>
-            Here is a list of students. Use the 'View transcript' link to 
-            view their transcripts.
-        </p>
+<div class="row">
+{% if studentlist %}
+    <div class="col-md-6 col-centered">
+        <table class="table table-hover">
+            <thead><tr><th>Name</th><th>Email</th><th></th></tr></thead>
+            <tbody>
+            {% for student in studentlist %}
+                <tr>
+                    <td><b>{{ student.name }}</b></td>
+                    <td>{{ student.email }}</td> 
+                    <td><a href="/dashboard/view/{{ student.link }}/">View scores</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <table class="table table-striped">
-                <thead>
-                    <tr><th>Name</th><th>Email</th><th></th></tr>
-                </thead>
-                <tbody>
-                    {% for student in studentlist %}
-                        <tr>
-                            <td><b>{{ student.name }}</b></td>
-                            <td>{{ student.email }}</td> 
-                            <td>
-                                <a href="/dashboard/view/{{ student.link }}/">
-                                View transcript
-                                </a>
-                            </td>     
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
+{% endif %}
+</div>
 {% else %}{% if scores %}
     <div class="alert alert-info" role="alert">
         <strong>This is a web transcript!</strong>
@@ -39,25 +27,44 @@
         the bottom or the 'Generate transcript' option from the top right drop down menu to do
         this. 
     </div>
-    <div class="page-header">
-        <h2><strong>The Mahindra Project Based Diploma Transcript</strong></h2>
-    </div>
+    
     <div class="row">
-    {% for cnum, score in scores %}
-        {% if len(cnum) == 2 %}
-            <h4><small>{{ name_map[cnum] }}:</small>{{ score }}</h4>
-        {% endif %}
-    {% endfor %}
+        <div class="col-md-6 col-centered">
+            <p class="lead"><b>Core Theme</b></p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                {% for cnum, score in scores %}
+                    {% if len(cnum) == 2 %}
+                    <tr>
+                        <td>{{ name_map[cnum] }}</td> 
+                        <td>{{ score }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
     </div>
+    
     <hr>
     <div class="row">
         <p>
-        <a href="/dashboard/generate/" type="button" class="btn btn-primary">Download</a>
-        <a href="/dashboard/rubric/" type="button" class="btn btn-default">View Rubric</a>
+        <button onclick="location.href = '/dashboard/generate/'" type="button" class="btn btn-primary">
+            Download
+        </button>
+        
+        <button onclick="location.href = '/dashboard/rubric/'" type="button" class="btn btn-secondary">
+            View Rubric
+        </button>
+        
         {% if session['acctype'] == 'FAC' %}
-        <a href="/dashboard/view/" type="button" class="btn btn-link">
+        <button onclick="location.href = '/dashboard/view/'" type="button" class="btn btn-link">
             Back to student list
-        </a>
+        </button>
         {% endif %}
         </p>
     </div>
