@@ -1,7 +1,11 @@
 *~*
 *.pyc
 
-#Ignore the venv
+# venv
 pbd/*
 
+# databases
+*.db
+
+# Sublime workspaces
 *.sublime-*
