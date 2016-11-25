@@ -148,11 +148,16 @@ def edit_scores():
 def edit_student_score(student):
     if session['logged_in'] and (session['acctype'] == 'FAC'):
         if request.method == 'GET':
-            foo = list(sorted(hierarchy.node_dict.keys()))
-            # print(foo)
+            graph_map = list(sorted(hierarchy.node_dict.keys()))
+            cursor = g.db.execute('''
+                select * from grades where username='{}'
+                '''.format(student))
+            scores = list(cursor.fetchone())[1:]
+            # print(graph_map)
             return render_template("add_scores.html",
-                                    structure=foo,
-                                    name_map=name_map)
+                                    structure=graph_map,
+                                    name_map=name_map,
+                                    scores=dict(zip(graph_map, scores)))
         else:
             # print(request.form)
             filled_tree = fill_tree(request.form)
