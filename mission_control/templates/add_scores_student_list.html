@@ -1,9 +1,9 @@
-{% extends "base.html" %}
-{% block wrapper %}
+{% extends "dashboard.html" %}
+{% block dashboard_ui %}
 <div class="row">
 {% if studentlist %}
     <div class="col-md-6 col-centered">
-        <table class="table table-striped">
+        <table class="table table-hover">
             <thead><tr><th>Name</th><th>Email</th><th></th></tr></thead>
             <tbody>
             {% for student in studentlist %}
@@ -18,4 +18,4 @@
     </div>
 {% endif %}
 </div>
-{% endblock wrapper %}
+{% endblock dashboard_ui %}
