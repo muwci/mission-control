@@ -187,3 +187,14 @@ def edit_students():
 @app.errorhandler(404)
 def missing_feature(e):
     return render_template('404.html'), 404
+
+@app.errorhandler(403)
+def forbidden(e):
+    flash({
+        'type': 'danger',
+        'title': "Forbidden!",
+        'content':
+            "You don't have privileges to access that part of the website."+\
+            "Please make sure you have logged in with the correct account."
+    })
+    return render_template('index.html'), 403

@@ -43,7 +43,7 @@
     {% if get_flashed_messages() %}
     <div class="modal" id="flashedMessageModal" tabindex="-1"
         role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-dialog" role="document">
             {% for message in get_flashed_messages() %}
             <div role="alert"
                 class="alert {% if message.type %}alert-{{ message.type }}{% endif %}">
