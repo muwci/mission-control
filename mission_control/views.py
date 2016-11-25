@@ -185,10 +185,6 @@ def edit_students():
 
 
 # Route all missing features to a missing feature template
-@app.route('/settings/')
-@app.route('/help/')
-@app.route('/dashboard/generate/')
-@app.route('/dashboard/rubric/')
-@app.route('/missing-feature/')
-def missing_feature():
-    return render_template('missing.html')
+@app.errorhandler(404)
+def missing_feature(e):
+    return render_template('404.html'), 404
