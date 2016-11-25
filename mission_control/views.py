@@ -15,7 +15,9 @@ def index():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        cursor = g.db.execute('select useremail,password from users')
+        cursor = g.db.execute('''
+            SELECT useremail,password FROM users
+        ''')
         users = dict(cursor.fetchall())
 
         useremail = request.form['useremail']
