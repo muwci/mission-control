@@ -7,13 +7,9 @@ from rubric.convertor import hierarchy
 from rubric.convertor import name_map
 from rubric.utils import fill_tree
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
-
-
-@app.route('/login/', methods=['GET', 'POST'])
-def login():
+    login_error = None
     if request.method == 'POST':
         cursor = g.db.execute('''
             SELECT useremail,password FROM users
@@ -24,17 +20,17 @@ def login():
         password = request.form['password']
 
         if useremail not in users.keys():
-            flash({
+            login_error = {
                 'type': 'danger',
                 'title': "Invalid email.",
                 'content': "We couldn't find an account with that email."
-            })
+            }
         elif password != users[useremail]:
-            flash({
+            login_error = {
                 'type': 'danger',
                 'title': "Invalid password.",
                 'content': "Please check your password."
-            })
+            }
         else:
             session['logged_in'] = True
             c = g.db.execute('''
@@ -46,12 +42,10 @@ def login():
             session['acctype'] = acctype
             flash({
                 'type': 'success',
-                'title': "Yay!",
                 'content': "You were logged in successfully"
             })
-            return redirect(url_for('dashboard'))
-    return render_template('login.html')
-
+            return redirect('/dashboard/')
+    return render_template('index.html', error=login_error)
 
 @app.route('/logout/')
 def logout():
