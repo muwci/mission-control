@@ -1,62 +1,53 @@
-from flask import request, session, g, redirect, url_for, \
-    render_template, flash, abort
+from flask import abort
+from flask import flash
+from flask import g
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import session
 
+from mission_control import actions
 from mission_control import app
+from mission_control import authenticate
 
 from rubric.convertor import hierarchy
 from rubric.convertor import name_map
 from rubric.utils import fill_tree
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    login_error = None
+    """
+    Tries to perform login on a POST request. Returns a redirect to the
+    dashboard on a successful login and displays the home page with the
+    login error message otherwise.
+
+    Returns the home page on all other request methods.
+    """
+
     if request.method == 'POST':
-        cursor = g.db.execute('''
-            SELECT useremail,password FROM users
-        ''')
-        users = dict(cursor.fetchall())
 
-        useremail = request.form['useremail']
+        email = request.form['useremail']
         password = request.form['password']
+        login_success, login_error = authenticate.site_login(email, password)
 
-        if useremail not in users.keys():
-            login_error = {
-                'type': 'danger',
-                'title': "Invalid email.",
-                'content': "We couldn't find an account with that email."
-            }
-        elif password != users[useremail]:
-            login_error = {
-                'type': 'danger',
-                'title': "Invalid password.",
-                'content': "Please check your password."
-            }
-        else:
-            session['logged_in'] = True
-            c = g.db.execute('''
-                select name, acctype from users where useremail=?
-                ''', (useremail,))
-            username, acctype = list(c.fetchone())
-            session['username'] = username
-            session['email'] = useremail
-            session['acctype'] = acctype
-            flash({
-                'type': 'success',
-                'content': "You were logged in successfully"
-            })
+        if login_success:
+            actions.login(email)
             return redirect('/dashboard/')
-    return render_template('index.html', error=login_error)
+        else:
+            return render_template('index.html', error=login_error)
+
+    return render_template('index.html')
 
 @app.route('/logout/')
 def logout():
-    session.pop('logged_in', None)
-    session.pop('username', None)
-    session.pop('email', None)
-    flash({
-        'content': 'You were logged out.',
-        'type': 'info'
-    })
-    return redirect(url_for('index'))
+    """
+    Logs out the user.
+
+    returns: a redirect to the home page.
+    """
+    actions.logout()
+    return redirect('/')
 
 
 # These are only accessible when the user is logged in.
@@ -183,7 +174,6 @@ def edit_students():
     return abort(403)
 
 
-# Route all missing features to a missing feature template
 @app.errorhandler(404)
 def missing_feature(e):
     return render_template('404.html'), 404
@@ -193,8 +183,9 @@ def forbidden(e):
     flash({
         'type': 'danger',
         'title': "Forbidden!",
-        'content':
-            "You don't have privileges to access that part of the website."+\
-            "Please make sure you have logged in with the correct account."
+        'content': """
+            You don't have privileges to access that part of the website.
+            Please make sure you are logged in with the correct account.
+        """
     })
     return render_template('index.html'), 403
