@@ -20,13 +20,13 @@ def site_login(email, password):
     cursor = g.db.execute("SELECT useremail,password FROM users")
     users = dict(cursor.fetchall())
 
-    if useremail not in users.keys():
+    if email not in users.keys():
         login_error = {
             'type': 'danger',
             'title': "Invalid email.",
             'content': "We couldn't find an account with that email."
         }
-    elif password != users[useremail]:
+    elif password != users[email]:
         login_error = {
             'type': 'danger',
             'title': "Invalid password.",
