@@ -3,6 +3,7 @@ from flask import g
 from flask import session
 
 from rubric.convertor import rubric_name_map
+from rubric.convertor import struct
 from rubric.utils import fill_tree
 
 
@@ -87,6 +88,22 @@ def get_faculty_dashboard_data():
     return data
 
 
+def score_viewer_data(student):
+    """
+    Returns: data (dict)
+        dictionary with all the values required to view the student
+        score using the view_scores.html template.
+    """
+    data = {
+        'rubric_headers': get_rubric_headers(),
+        'graph': struct.node_dict,
+        'scores': get_all_student_scores(student),
+        'name_map': rubric_name_map,
+        'student': student
+    }
+    return data
+
+
 def get_student_scores(student, term=1):
     """
     Returns: (criteria, score) pairs (list of tuples)
@@ -96,10 +113,40 @@ def get_student_scores(student, term=1):
         SELECT *
         FROM grades
         WHERE username=? AND term=?
-        """, (student, term))
+    """, (student, term))
 
     scores = list(c.fetchone())
     return zip(list(sorted(rubric_name_map.keys())), scores[2:])
+
+
+def get_all_student_scores(student):
+    """
+    Returns: {criteria:{term:score}} (dict)
+        Dictionary of criteria:scores pairs for the given student.
+        Each value in the dictionary will be a dictionary with the
+        term as key and the score as value.
+    """
+
+    all_scores = {ky:{} for ky in rubric_name_map.keys()}
+
+    c = g.db.execute("""
+        SELECT term
+        FROM grades
+        WHERE username=?
+    """, (student,))
+
+    terms = list(c.fetchall())
+
+    for (term,) in terms:
+        c = g.db.execute("""
+            SELECT *
+            FROM grades
+            WHERE username=? AND term=?
+        """, (student, term))
+        term_scores = list(c.fetchone())[2:]
+        for criteria, score in zip(sorted(all_scores.keys()), term_scores):
+            all_scores[criteria][term] = score
+    return all_scores
 
 def get_rubric_headers():
     """

@@ -3,20 +3,23 @@
 {%- if data['scores'] -%}
     <div class="row">
         <div class="col-md-8 col-centered">
-            <table class="table">
-            {%- for criteria, score in data['scores'] -%}
-                {%- if len(criteria) == 1 -%}
-                <thead>
-                    <tr><th colspan="2">{{ data['name_map'][criteria] }}</th></tr>
-                </thead>
-                {%- elif len(criteria) == 2 -%}
+        <table class="table table-hover">
+        {% for criteria in sorted(data['rubric_headers']) %}
+            <thead class="table-def">
+                <th colspan="5">{{ data['name_map'][criteria] }}</th>
+            </thead>
+            <tbody>
+                {% for skill in sorted(data['graph'][criteria]) %}
                 <tr>
-                    <td>{{ data['name_map'][criteria] }}</td>
-                    <td>{{ score }}</td>
+                    <td>{{ data['name_map'][skill] }}</td>
+                    {% for term in sorted(data['scores'][skill]) %}
+                    <td>{{ data['scores'][skill][term] }}</td>
+                    {% endfor %}
                 </tr>
-                {%- endif -%}
-            {%- endfor -%}
-            </table>
+                {% endfor %}
+            </tbody>
+        {% endfor %}
+        </table>
         </div>
     </div>
 
