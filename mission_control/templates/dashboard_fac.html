@@ -1,84 +1,82 @@
 {% extends "base.html" %}
 {% block wrapper %}
 <div class="row">
-    <div class="col-xs-10 col-centered">
-    
     <h3>Dashboard</h3>
     <p>Use the accordian below to access your list of students.
     More actions are available on the top right drop-down menu.</p>
-        <div id="studentAccordion" role="tablist" aria-multiselectable="true">
-            {% for class in data['classes'] %}
-            <div class="card">
-                <div class="card-header" role="tab" id="{{ class }}-heading">
-                    <h5 class="mb-0">
-                        <a data-toggle="collapse" data-parent="#studentAccordion"
-                            href="#collapse-{{ class }}"
-                            aria-controls="collapse-{{ class }}">
-                        Class of {{ class }}
-                    </a>
-                    </h5>
-                </div>
+    
+    <div id="studentAccordion" role="tablist" aria-multiselectable="true">
+        {% for class in data['classes'] %}
+        <div class="card">
+            <div class="card-header" role="tab" id="{{ class }}-heading">
+                <h5 class="mb-0">
+                    <a data-toggle="collapse" data-parent="#studentAccordion"
+                        href="#collapse-{{ class }}"
+                        aria-controls="collapse-{{ class }}">
+                    Class of {{ class }}
+                </a>
+                </h5>
+            </div>
 
-                <div id="collapse-{{ class }}" class="collapse"
-                    role="tabpanel" aria-labelledby="{{ class }}-heading">
-                    <div class="card-block">
-                        <table class="table">
-                            <tbody>
-                            {% for student in data['classes'][class] %}
-                            <tr>
-                            <td>{{ data['students'][student]['name'] }}</td>
-                            <td>({{ data['students'][student]['email'] }})</td>
-                            <td>
-                                <div class="btn-group" role="group" aria-label="{{ student }} actions">
-                                    <button type="button" class="btn btn-outline-primary"
-                                        onclick="location.href='/dashboard/view/{{student}}';">
-                                        View scores
+            <div id="collapse-{{ class }}" class="collapse"
+                role="tabpanel" aria-labelledby="{{ class }}-heading">
+                <div class="card-block">
+                    <table class="table">
+                        <tbody>
+                        {% for student in data['classes'][class] %}
+                        <tr>
+                        <td>{{ data['students'][student]['name'] }}</td>
+                        <td>({{ data['students'][student]['email'] }})</td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="{{ student }} actions">
+                                <button type="button" class="btn btn-outline-primary"
+                                    onclick="location.href='/dashboard/view/{{student}}';">
+                                    View scores
+                                </button>
+                                
+                                <button type="button" class="btn btn-outline-primary" 
+                                    disabled>
+                                    Generate transcript
+                                </button>
+                                
+                                <div class="btn-group" role="group">
+                                    <button id="{{student}}-edit-dropdown" type="button"
+                                        class="btn btn-outline-primary dropdown-toggle" 
+                                        data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        Edit scores
                                     </button>
                                     
-                                    <button type="button" class="btn btn-outline-primary" 
-                                        disabled>
-                                        Generate transcript
-                                    </button>
-
-                                    <div class="btn-group" role="group">
-                                        <button id="{{student}}-edit-dropdown" type="button"
-                                            class="btn btn-outline-primary dropdown-toggle" 
-                                            data-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            Edit scores
-                                        </button>
-                                        
-                                        <div class="dropdown-menu"
-                                            aria-labelledby="{{student}}-edit-dropdown">
-                                            <a class="dropdown-item"
-                                                href="/dashboard/edit/{{ student }}/t1/">
-                                                Term 1
-                                            </a>
-                                            <a class="dropdown-item"
-                                                href="/dashboard/edit/{{ student }}/t2/">
-                                                Term 2
-                                            </a>
-                                            <a class="dropdown-item"
-                                                href="/dashboard/edit/{{ student }}/t3/">
-                                                Term 3
-                                            </a>
-                                            <a class="dropdown-item"
-                                                href="/dashboard/edit/{{ student }}/t4/">
-                                                Term 4
-                                            </a>
-                                        </div>
+                                    <div class="dropdown-menu"
+                                        aria-labelledby="{{student}}-edit-dropdown">
+                                        <a class="dropdown-item"
+                                            href="/dashboard/edit/{{ student }}/t1/">
+                                            Term 1
+                                        </a>
+                                        <a class="dropdown-item"
+                                            href="/dashboard/edit/{{ student }}/t2/">
+                                            Term 2
+                                        </a>
+                                        <a class="dropdown-item"
+                                            href="/dashboard/edit/{{ student }}/t3/">
+                                            Term 3
+                                        </a>
+                                        <a class="dropdown-item"
+                                            href="/dashboard/edit/{{ student }}/t4/">
+                                            Term 4
+                                        </a>
                                     </div>
                                 </div>
-                            </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                            </div>
+                        </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock wrapper %}
