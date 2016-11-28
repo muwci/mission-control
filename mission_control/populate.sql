@@ -10,6 +10,3 @@ INSERT INTO users VALUES ('rbbit', 'rbbit@muwci.net', 'R. Bbit','rabbits', 'STU'
 
 INSERT INTO students VALUES ('graffe', 2017);
 INSERT INTO students VALUES ('rbbit', 2018);
-
-INSERT INTO grades (username) VALUES ('graffe');
-INSERT INTO grades (username) VALUES ('rbbit');
