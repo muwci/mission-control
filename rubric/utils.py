@@ -1,18 +1,15 @@
 from rubric.convertor import struct
 
-def fill_tree(tree):
-    input_tree = tree.copy()
-    # input_tree.pop('submit')
-    
-    for node in input_tree:
-        if input_tree[node] == '':
-            input_tree[node] = fill_parent(node, input_tree)
+def fill_tree(tree):    
+    for node in tree:
+        if tree[node] == '':
+            tree[node] = fill_parent(node, tree)
         else:
-            fill_children(node, input_tree)
-    for ky in input_tree:
-        if input_tree[ky] == '':
-            input_tree[ky] = 0
-    return input_tree
+            fill_children(node, tree)
+    for ky in tree:
+        if tree[ky] == '':
+            tree[ky] = 0
+    return tree
 
 def fill_children(node, tree, graph=struct.node_dict):
     """

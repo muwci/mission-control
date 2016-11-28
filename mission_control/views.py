@@ -109,8 +109,8 @@ def view_student_score(student):
     return abort(403)
 
 
-@app.route('/dashboard/edit/<student>/', methods=['GET', 'POST'])
-def edit_student_score(student):
+@app.route('/dashboard/edit/<student>/t<term>/', methods=['GET', 'POST'])
+def edit_student_score(term, student):
     """
     Updates the scores on a POST request from a logged in faculty
     member and redirects them to the view score page views the form on a
@@ -118,24 +118,34 @@ def edit_student_score(student):
     other cases.
     """
     if session['logged_in'] and (session['acctype'] == 'FAC'):
-        if request.method == 'GET':
-            data = {
-                'scores': dict(actions.get_student_scores(student)),
-                'name_map': rubric_name_map,
-                'rubric_headers': actions.get_rubric_headers(),
-                'graph': struct.node_dict,
-                'student': student
-            }
-            return render_template('add_scores.html',
-                                    data=data,
-                                    title="%s - Add scores" % (student,))
-        elif request.method == 'POST':
-            actions.update_scores(request.form, student)
+        term = int(term)
+        if term <= 4 and term >= 1:
+            if request.method == 'GET':
+                data = {
+                    'scores': dict(actions.get_student_scores(student, term)),
+                    'name_map': rubric_name_map,
+                    'rubric_headers': actions.get_rubric_headers(),
+                    'graph': struct.node_dict,
+                    'student': student,
+                    'term': term
+                }
+                return render_template('add_scores.html',
+                                        data=data,
+                                        title="%s - Add scores" % (student,))
+            elif request.method == 'POST':
+                actions.update_scores(request.form, student, term)
+                flash({
+                    'content': "Scores updated for %s" % (student,),
+                    'type': 'success'
+                })
+                return redirect('/dashboard/view/%s/' % (student,))
+        else:
             flash({
-                'content': "Scores updated for %s" % (student,),
-                'type': 'success'
+                'type': 'warning',
+                'title': "Invalid input",
+                'content': "You cannot edit scores for term %s." % (term,)
             })
-            return redirect('/dashboard/view/%s/' % (student,))
+            return redirect('/dashboard/')
     return abort(403)
 
 

@@ -87,7 +87,7 @@ def get_faculty_dashboard_data():
     return data
 
 
-def get_student_scores(student):
+def get_student_scores(student, term=1):
     """
     Returns: (criteria, score) pairs (list of tuples)
         list of (criteria, score) tuples for the given student.
@@ -95,12 +95,11 @@ def get_student_scores(student):
     c = g.db.execute("""
         SELECT *
         FROM grades
-        WHERE username=?
-        """, (student,))
+        WHERE username=? AND term=?
+        """, (student, term))
 
     scores = list(c.fetchone())
-    return zip(list(sorted(rubric_name_map.keys())), scores[1:])
-
+    return zip(list(sorted(rubric_name_map.keys())), scores[2:])
 
 def get_rubric_headers():
     """
@@ -109,22 +108,24 @@ def get_rubric_headers():
     return [c for c in sorted(rubric_name_map.keys()) if len(c) == 1]
 
 
-def update_scores(form_input, student):
+def update_scores(form_input, student, term):
     """
-    From the given form input, updates the scores in the database.
+    From the given form input, updates the scores in the database for
+    the given student and term.
 
     Returns:
         None
     """
-    filled_tree = fill_tree(form_input)
+    input_tree = form_input.copy()
+    filled_tree = fill_tree(input_tree)
     setter_string = ', '.join(["%s=%s" % (ky, filled_tree[ky])
                                           for ky in filled_tree])
 
     db_query = """
         UPDATE grades
         SET %s
-        WHERE username='%s'
-    """ % (setter_string, student)
+        WHERE username='%s' AND term=%s
+    """ % (setter_string, student, term)
 
     cursor = g.db.execute(db_query)
     g.db.commit()
