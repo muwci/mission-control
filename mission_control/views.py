@@ -79,9 +79,12 @@ def view_scores():
     if session['logged_in']:
         if session['acctype'] == 'STU':
             student = session['username']
+            data = {
+                'scores': actions.get_student_scores(student),
+                'name_map': rubric_name_map
+            }
             return render_template('view_scores.html',
-                                   scores=actions.get_student_scores(student),
-                                   rubric_name_map=rubric_name_map,
+                                   data=data,
                                    title="View Scores")
     return abort(403)
 
@@ -95,9 +98,12 @@ def view_student_score(student):
     """
     if session['logged_in']:
         if (session['acctype'] == 'FAC'):
+            data = {
+                'scores': actions.get_student_scores(student),
+                'name_map': rubric_name_map
+            }
             return render_template('view_scores.html',
-                                   scores=actions.get_student_scores(student),
-                                   rubric_name_map=rubric_name_map,
+                                   data=data,
                                    title="%s - scores" % (student,))
         elif session['acctype'] == 'STU':
             return redirect('/dashboard/view/')

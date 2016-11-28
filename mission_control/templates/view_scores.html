@@ -1,26 +1,27 @@
 {% extends "base.html" %}
 {% block wrapper %}
-{% if scores %}
+{%- if data['scores'] -%}
     <div class="row">
         <div class="col-md-10 col-centered">
             <table class="table">
+            {%- for criteria, score in data['scores'] -%}
+                {%- if len(criteria) == 1 -%}
                 <thead>
-                    <tr>
-                        <th colspan="2">Core Theme</th>
-                    </tr>
+                    <tr><th colspan="2">{{ data['name_map'][criteria] }}</th></tr>
                 </thead>
-                {% for cnum, score in scores %}
-                    {% if len(cnum) == 2 %}
-                    <tr>
-                        <td>{{ name_map[cnum] }}</td> 
-                        <td>{{ score }}</td>
-                    </tr>
-                    {% endif %}
-                {% endfor %}
+                {%- elif len(criteria) == 2 -%}
+                <tr>
+                    <td>{{ data['name_map'][criteria] }}</td>
+                    <td>{{ score }}</td>
+                </tr>
+                {%- endif -%}
+            {%- endfor -%}
             </table>
         </div>
     </div>
+
     <hr>
+
     <div class="row">
         <p>
             <button onclick="location.href='/dashboard/generate/'" type="button"

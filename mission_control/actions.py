@@ -87,8 +87,8 @@ def get_faculty_dashboard_data():
 
 def get_student_scores(student):
     """
-    Returns: scores (dict)
-        dictionary of criteria:score pairs for the given student.
+    Returns: (criteria, score) pairs (list of tuples)
+        list of (criteria, score) tuples for the given student.
     """
     c = g.db.execute("""
         SELECT *
