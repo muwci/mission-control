@@ -1,4 +1,4 @@
-from rubric.convertor import hierarchy
+from rubric.convertor import struct
 
 def fill_tree(tree):
     input_tree = tree.copy()
@@ -14,7 +14,7 @@ def fill_tree(tree):
             input_tree[ky] = 0
     return input_tree
 
-def fill_children(node, tree, graph=hierarchy.node_dict):
+def fill_children(node, tree, graph=struct.node_dict):
     """
     Gets all the children of the current node and fills them with the
     score of the node. 
@@ -25,7 +25,7 @@ def fill_children(node, tree, graph=hierarchy.node_dict):
         tree[child] = tree[node]
         fill_children(child, tree)
 
-def fill_parent(node, tree, graph=hierarchy.node_dict):
+def fill_parent(node, tree, graph=struct.node_dict):
     """
     Takes the average of the weights of the children and assigns it to 
     the parent.

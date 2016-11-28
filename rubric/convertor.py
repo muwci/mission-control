@@ -62,8 +62,3 @@ for criteria_id, criteria_file in CRITERIA_DATA:
         struct.add_node(nd1)
         struct.add_node(nd2)
         struct.add_node(nd3)
-
-for n, k in enumerate(sorted(ky for ky in rubric_name_map.keys() if len(ky) != 1)):
-    if n%4 == 0:
-        print('')
-    print(str(k) + ' integer, ', end='')

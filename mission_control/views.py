@@ -10,8 +10,8 @@ from mission_control import actions
 from mission_control import app
 from mission_control import authenticate
 
-from rubric.convertor import hierarchy
-from rubric.convertor import name_map
+from rubric.convertor import struct
+from rubric.convertor import rubric_name_map
 from rubric.utils import fill_tree
 
 
@@ -81,7 +81,7 @@ def view_scores():
             student = session['username']
             return render_template('view_scores.html',
                                    scores=actions.get_student_scores(student),
-                                   name_map=name_map,
+                                   rubric_name_map=rubric_name_map,
                                    title="View Scores")
     return abort(403)
 
@@ -97,7 +97,7 @@ def view_student_score(student):
         if (session['acctype'] == 'FAC'):
             return render_template('view_scores.html',
                                    scores=actions.get_student_scores(student),
-                                   name_map=name_map,
+                                   rubric_name_map=rubric_name_map,
                                    title="%s - scores" % (student,))
         elif session['acctype'] == 'STU':
             return redirect('/dashboard/view/')
@@ -108,14 +108,14 @@ def view_student_score(student):
 def edit_student_score(student):
     if session['logged_in'] and (session['acctype'] == 'FAC'):
         if request.method == 'GET':
-            graph_map = list(sorted(hierarchy.node_dict.keys()))
+            graph_map = list(sorted(struct.node_dict.keys()))
             cursor = g.db.execute('''
                 select * from grades where username='{}'
                 '''.format(student))
             scores = list(cursor.fetchone())[1:]
             return render_template('add_scores.html',
                                     structure=graph_map,
-                                    name_map=name_map,
+                                    rubric_name_map=rubric_name_map,
                                     scores=dict(zip(graph_map, scores)))
         elif request.method == 'POST':
             filled_tree = fill_tree(request.form)

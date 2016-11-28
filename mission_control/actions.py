@@ -2,7 +2,7 @@ from flask import flash
 from flask import g
 from flask import session
 
-from rubric.convertor import name_map
+from rubric.convertor import rubric_name_map
 
 def login(email):
     """
@@ -97,4 +97,4 @@ def get_student_scores(student):
         """, (student,))
     
     scores = list(c.fetchone())
-    return zip(list(sorted(name_map.keys())), scores[1:])
+    return zip(list(sorted(rubric_name_map.keys())), scores[1:])
