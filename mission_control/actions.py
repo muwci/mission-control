@@ -3,6 +3,8 @@ from flask import g
 from flask import session
 
 from rubric.convertor import rubric_name_map
+from rubric.utils import fill_tree
+
 
 def login(email):
     """
@@ -41,7 +43,7 @@ def logout():
     session.pop('username', None)
     session.pop('name', None)
     session.pop('email', None)
-    
+
     flash({
         'type': 'info',
         'content': 'You were logged out.'
@@ -67,7 +69,7 @@ def get_faculty_dashboard_data():
         ON students.username=users.username
         WHERE users.acctype='STU'
     """)
-    students = { 
+    students = {
         username: {
             'name': name,
             'email': email,
@@ -77,11 +79,11 @@ def get_faculty_dashboard_data():
     }
 
     classes = {
-        year:[user for user in students if students[user]['year'] == year]
-            for year in years
+        year: [user for user in students if students[user]['year'] == year]
+                        for year in years
     }
 
-    data = {'classes':classes, 'students':students}
+    data = {'classes': classes, 'students': students}
     return data
 
 
@@ -95,6 +97,36 @@ def get_student_scores(student):
         FROM grades
         WHERE username=?
         """, (student,))
-    
+
     scores = list(c.fetchone())
     return zip(list(sorted(rubric_name_map.keys())), scores[1:])
+
+
+def get_rubric_headers():
+    """
+    Returns: list of rubric roots (list)
+    """
+    return [c for c in sorted(rubric_name_map.keys()) if len(c) == 1]
+
+
+def update_scores(form_input, student):
+    """
+    From the given form input, updates the scores in the database.
+
+    Returns:
+        None
+    """
+    filled_tree = fill_tree(form_input)
+    setter_string = ', '.join(["%s=%s" % (ky, filled_tree[ky])
+                                          for ky in filled_tree])
+
+    db_query = """
+        UPDATE grades
+        SET %s
+        WHERE username='%s'
+    """ % (setter_string, student)
+
+    cursor = g.db.execute(db_query)
+    g.db.commit()
+
+    return None

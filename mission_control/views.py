@@ -12,8 +12,6 @@ from mission_control import authenticate
 
 from rubric.convertor import struct
 from rubric.convertor import rubric_name_map
-from rubric.utils import fill_tree
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -112,36 +110,38 @@ def view_student_score(student):
 
 @app.route('/dashboard/edit/<student>/', methods=['GET', 'POST'])
 def edit_student_score(student):
+    """
+    Updates the scores on a POST request from a logged in faculty
+    member and redirects them to the view score page views the form on a
+    GET request from a logged in faculty. A 403 is returned for all
+    other cases.
+    """
     if session['logged_in'] and (session['acctype'] == 'FAC'):
         if request.method == 'GET':
-            graph_map = list(sorted(struct.node_dict.keys()))
-            cursor = g.db.execute('''
-                select * from grades where username='{}'
-                '''.format(student))
-            scores = list(cursor.fetchone())[1:]
+            data = {
+                'scores': dict(actions.get_student_scores(student)),
+                'name_map': rubric_name_map,
+                'rubric_headers': actions.get_rubric_headers(),
+                'graph': struct.node_dict,
+                'student': student
+            }
             return render_template('add_scores.html',
-                                    structure=graph_map,
-                                    rubric_name_map=rubric_name_map,
-                                    scores=dict(zip(graph_map, scores)))
+                                    data=data,
+                                    title="%s - Add scores" % (student,))
         elif request.method == 'POST':
-            filled_tree = fill_tree(request.form)
-            db_query = "UPDATE grades SET {} WHERE username='{}'".format(
-                ', '.join(["%s=%s" % (ky, filled_tree[ky])
-                    for ky in filled_tree]),
-                student)
-            cursor = g.db.execute(db_query)
-            g.db.commit()
+            actions.update_scores(request.form, student)
             flash({
-                'content': "Scores updated for {}".format(student),
+                'content': "Scores updated for %s" % (student,),
                 'type': 'success'
             })
-            return redirect('/dashboard/')
+            return redirect('/dashboard/view/%s/' % (student,))
     return abort(403)
 
 
 @app.errorhandler(404)
 def missing_feature(e):
     return render_template('404.html', title='Not Found'), 404
+
 
 @app.errorhandler(403)
 def forbidden(e):
