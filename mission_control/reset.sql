@@ -16,6 +16,7 @@ create table students (
 drop table if exists grades;
 create table grades (
     username text primary key,
+    term integer,
     
     A integer, A1 integer, A11 integer, A111 integer, 
     A112 integer, A113 integer, A114 integer, A115 integer, 
