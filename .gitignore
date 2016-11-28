@@ -9,3 +9,6 @@ pbd/*
 
 # Sublime workspaces
 *.sublime-*
+
+# Ignore actual PBD data
+*mission_control/populate.sql
