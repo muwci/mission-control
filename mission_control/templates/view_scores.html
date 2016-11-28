@@ -1,41 +1,12 @@
-{% extends "dashboard.html" %}
-{% block dashboard_ui %}
-{% if studentlist %}
-<div class="row">
-{% if studentlist %}
-    <div class="col-md-6 col-centered">
-        <table class="table table-hover">
-            <thead><tr><th>Name</th><th>Email</th><th></th></tr></thead>
-            <tbody>
-            {% for student in studentlist %}
-                <tr>
-                    <td><b>{{ student.name }}</b></td>
-                    <td>{{ student.email }}</td> 
-                    <td><a href="/dashboard/view/{{ student.link }}/">View scores</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-{% endif %}
-</div>
-{% else %}{% if scores %}
-    <div class="alert alert-info" role="alert">
-        <strong>This is a web transcript!</strong>
-        Given below is a preview of your transcript. If you are planning on printing/archiving
-        this, consider generating a PDF instaed. You use the 'Download' button at
-        the bottom or the 'Generate transcript' option from the top right drop down menu to do
-        this. 
-    </div>
-    
+{% extends "base.html" %}
+{% block wrapper %}
+{% if scores %}
     <div class="row">
-        <div class="col-md-6 col-centered">
-            <p class="lead"><b>Core Theme</b></p>
+        <div class="col-md-10 col-centered">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Criteria</th>
-                        <th>Score</th>
+                        <th colspan="2">Core Theme</th>
                     </tr>
                 </thead>
                 {% for cnum, score in scores %}
@@ -49,32 +20,26 @@
             </table>
         </div>
     </div>
-    
     <hr>
     <div class="row">
         <p>
-        <button onclick="location.href = '/dashboard/generate/'" type="button" class="btn btn-primary">
-            Download
-        </button>
-        
-        <button onclick="location.href = '/dashboard/rubric/'" type="button" class="btn btn-secondary">
-            View Rubric
-        </button>
-        
-        {% if session['acctype'] == 'FAC' %}
-        <button onclick="location.href = '/dashboard/view/'" type="button" class="btn btn-link">
-            Back to student list
-        </button>
-        {% endif %}
+            <button onclick="location.href='/dashboard/generate/'" type="button"
+                class="btn btn-primary" disabled>
+                Download
+            </button>
+            
+            <button onclick="location.href='/dashboard/rubric/'" type="button"
+                class="btn btn-primary" disabled>
+                View Rubric
+            </button>
+            
+            {% if session['acctype'] == 'FAC' %}
+            <button onclick="location.href='/dashboard/'" type="button"
+                class="btn btn-link">
+                Back to student list
+            </button>
+            {% endif %}
         </p>
     </div>
-{% else %}
-    <div class="alert alert-danger" role="alert">
-        <strong>Oh snap! Something went very wrong somewhere.</strong>
-        You were not  supposed to see this message. Something has broken mission control massively
-        from the inside. Please get in touch with Cary Reid and Abhik Pal so that they can look
-        into this.
-    </div>
-{% endif %}{% endif %}
-<!-- VIEWSCORES.HTML TEST STRING -->
-{% endblock dashboard_ui %}
+{% endif %}
+{% endblock wrapper %}

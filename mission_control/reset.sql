@@ -1,9 +1,16 @@
 drop table if exists users;
 create table users (
-    useremail text primary key,
+    username text primary key,
+    email text,
     name text not null,
     password text not null,
     acctype text not null
+);
+
+drop table if exists students;
+create table students (
+    username text primary key,
+    year integer not null
 );
 
 drop table if exists grades;

@@ -17,7 +17,7 @@ def site_login(email, password):
     login_error = None
     login_status = False
 
-    cursor = g.db.execute("SELECT useremail,password FROM users")
+    cursor = g.db.execute("SELECT email,password FROM users")
     users = dict(cursor.fetchall())
 
     if email not in users.keys():

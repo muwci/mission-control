@@ -15,17 +15,14 @@
             href="/" id="supportedContentDropdown" 
             data-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">
-            {{ session['username'] }}<span class="caret"></span>
+            {{ session['name'] }}<span class="caret"></span>
         </a>
 
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="supportedContentDropdown">
             <h6 class="dropdown-header">Actions</h6>
             <a class="dropdown-item" href="/dashboard/">Dashboard</a>
-            
             {%- if session['acctype'] == 'FAC' -%}
-            <a class="dropdown-item" href="/dashboard/students/">Student list</a>
-            <a class="dropdown-item" href="/dashboard/edit/">Edit student scores</a>
-            <a class="dropdown-item" href="/dashboard/view/">View student scores</a>
+            <a class="dropdown-item" href="/dashboard/add/">Add students</a>
             <a class="dropdown-item" href="/dashboard/generate/">Generate transcripts</a>
             {%- elif session['acctype'] == 'STU' -%}
             <a class="dropdown-item" href="/dashboard/view/">View scores</a>

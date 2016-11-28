@@ -2,7 +2,7 @@ from rubric.convertor import hierarchy
 
 def fill_tree(tree):
     input_tree = tree.copy()
-    input_tree.pop('submit')
+    # input_tree.pop('submit')
     
     for node in input_tree:
         if input_tree[node] == '':

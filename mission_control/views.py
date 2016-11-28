@@ -37,7 +37,8 @@ def index():
         else:
             return render_template('index.html', error=login_error)
 
-    return render_template('index.html')
+    return render_template('index.html', title='Home')
+
 
 @app.route('/logout/')
 def logout():
@@ -50,84 +51,58 @@ def logout():
     return redirect('/')
 
 
-# These are only accessible when the user is logged in.
-# a 403 is returned when someone else tries to access this.
-# THIS WILL BREAK THE OLDER TESTS!
-#
-# We can create a custom 403 later. This will nicely ask the users to login.
-# + a 404 for all those lost wanderers.
-
 @app.route('/dashboard/')
 def dashboard():
+    """
+    returns:
+        The appropriate dashboard based on the account type if the user
+        is logged in. A 403 abort is returned otherwise.
+    """
     if session['logged_in']:
-        return render_template('dashboard.html')
+        if session['acctype'] == 'STU':
+            return render_template('dashboard_stu.html',
+                                   data=actions.get_student_dashboard_data(),
+                                   title="Dashboard")
+        elif session['acctype'] == 'FAC':
+            return render_template('dashboard_fac.html',
+                                   data=actions.get_faculty_dashboard_data(),
+                                   title="Dashboard")
     return abort(403)
 
 
 @app.route('/dashboard/view/')
 def view_scores():
+    """
+    Return the scores page if the student tries to access her scores. A
+    403 abort is returned for all other cases.
+    """
     if session['logged_in']:
-        # a student is directly led to their view score page.
         if session['acctype'] == 'STU':
-            cursor = g.db.execute('''
-                select * from grades where username='{}'
-                '''.format(session['email'][:-1*len('@muwci.net')]))
-            scores = list(cursor.fetchone())
+            student = session['username']
             return render_template('view_scores.html',
-                                   scores=zip(list(sorted(name_map.keys())),
-                                            scores[1:]),
-                                   name_map=name_map)
-        # a faculty memeber is led to a page listing all the students.
-        if session['acctype'] == 'FAC':
-            cursor = g.db.execute('''
-                select useremail,name from users where acctype='STU'
-                ''')
-            studentlist = [{
-                'name': s_name,
-                'email': s_email,
-                'link': s_email.split('@')[0]
-                } for s_email, s_name in list(cursor.fetchall())]
-            return render_template('view_scores.html',
-                                    studentlist=studentlist)
+                                   scores=actions.get_student_scores(student),
+                                   name_map=name_map,
+                                   title="View Scores")
     return abort(403)
 
 
 @app.route('/dashboard/view/<student>/')
 def view_student_score(student):
+    """
+    Redirect the user to her own view scores page if she tries to access
+    this. Faculty should be shown the scores page for the requested
+    student. Return a 403 for users who are not logged in.
+    """
     if session['logged_in']:
-        # a faculty can view pretty much everyones scores, so just let them
-        # view the required page
         if (session['acctype'] == 'FAC'):
-            cursor = g.db.execute('''
-                select * from grades where username='{}'
-                '''.format(student))
-            scores = list(cursor.fetchone())
             return render_template('view_scores.html',
-                                   scores=zip(list(sorted(name_map.keys())),
-                                            scores[1:]),
-                                   name_map=name_map)
-        # if a student tries to access this page, we redirect them to their
-        # view scores page
-        if session['acctype'] == 'STU':
+                                   scores=actions.get_student_scores(student),
+                                   name_map=name_map,
+                                   title="%s - scores" % (student,))
+        elif session['acctype'] == 'STU':
             return redirect('/dashboard/view/')
     return abort(403)
 
-
-@app.route('/dashboard/edit/')
-def edit_scores():
-    # only a faculty account can add scores.
-    if session['logged_in'] and session['acctype'] == 'FAC':
-        cursor = g.db.execute('''
-                select useremail,name from users where acctype='STU'
-                ''')
-        studentlist = [{
-            'name': s_name,
-            'email': s_email,
-            'link': s_email.split('@')[0]
-            } for s_email, s_name in list(cursor.fetchall())]
-        return render_template('add_scores_student_list.html',
-                                studentlist=studentlist)
-    return abort(403)
 
 @app.route('/dashboard/edit/<student>/', methods=['GET', 'POST'])
 def edit_student_score(student):
@@ -138,45 +113,29 @@ def edit_student_score(student):
                 select * from grades where username='{}'
                 '''.format(student))
             scores = list(cursor.fetchone())[1:]
-            # print(graph_map)
-            return render_template("add_scores.html",
+            return render_template('add_scores.html',
                                     structure=graph_map,
                                     name_map=name_map,
                                     scores=dict(zip(graph_map, scores)))
-        else:
-            # print(request.form)
+        elif request.method == 'POST':
             filled_tree = fill_tree(request.form)
-            db_query = "UPDATE grades set {} WHERE username='{}'".format(
+            db_query = "UPDATE grades SET {} WHERE username='{}'".format(
                 ', '.join(["%s=%s" % (ky, filled_tree[ky])
                     for ky in filled_tree]),
-                student)  
-            # print(db_query)
-            # query_value_string = '\'' + student + '\', ' + ', '.join([str(filled_tree[nm]) for nm in sorted(filled_tree.keys())])
-
-            # cursor = g.db.execute('''
-                # insert into grades values ({})
-            # '''.format(query_value_string))
+                student)
             cursor = g.db.execute(db_query)
             g.db.commit()
             flash({
                 'content': "Scores updated for {}".format(student),
                 'type': 'success'
             })
-            return redirect('/dashboard/edit/')
-    return abort(403)
-
-
-@app.route('/dashboard/students/')
-def edit_students():
-    # only a faculty account can add scores.
-    if session['logged_in'] and session['acctype'] == 'FAC':
-        return render_template('students.html')
+            return redirect('/dashboard/')
     return abort(403)
 
 
 @app.errorhandler(404)
 def missing_feature(e):
-    return render_template('404.html'), 404
+    return render_template('404.html', title='Not Found'), 404
 
 @app.errorhandler(403)
 def forbidden(e):
@@ -188,4 +147,4 @@ def forbidden(e):
             Please make sure you are logged in with the correct account.
         """
     })
-    return render_template('index.html'), 403
+    return redirect('/'), 403
