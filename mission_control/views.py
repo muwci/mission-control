@@ -123,7 +123,7 @@ def edit_student_score(term, student):
                 }
                 return render_template('add_scores.html',
                                         data=data,
-                                        title="%s - Add scores" % (student,))
+                                        title="%s - Edit scores" % (student,))
             elif request.method == 'POST':
                 actions.update_scores(request.form, student, term)
                 flash({

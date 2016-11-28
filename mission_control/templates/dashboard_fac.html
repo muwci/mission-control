@@ -24,28 +24,54 @@
                     <div class="card-block">
                         <table class="table">
                             <tbody>
-                                {% for student in data['classes'][class] %}
-                                <tr>
-                                    <td>{{ data['students'][student]['name'] }}</td>
-                                    <td>({{ data['students'][student]['email'] }})</td>
-                                    <td>
+                            {% for student in data['classes'][class] %}
+                            <tr>
+                            <td>{{ data['students'][student]['name'] }}</td>
+                            <td>({{ data['students'][student]['email'] }})</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="{{ student }} actions">
                                     <button type="button" class="btn btn-outline-primary"
-                                        onclick="location.href='/dashboard/view/{{ student }}';">
+                                        onclick="location.href='/dashboard/view/{{student}}';">
                                         View scores
                                     </button>
-
-                                    <button type="button" class="btn btn-outline-primary"
-                                        onclick="location.href='/dashboard/edit/{{ student }}';">
-                                        Edit scores
-                                    </button>
-
-                                    <button type="button" class="btn btn-outline-primary"
+                                    
+                                    <button type="button" class="btn btn-outline-primary" 
                                         disabled>
                                         Generate transcript
                                     </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
+
+                                    <div class="btn-group" role="group">
+                                        <button id="{{student}}-edit-dropdown" type="button"
+                                            class="btn btn-outline-primary dropdown-toggle" 
+                                            data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            Edit scores
+                                        </button>
+                                        
+                                        <div class="dropdown-menu"
+                                            aria-labelledby="{{student}}-edit-dropdown">
+                                            <a class="dropdown-item"
+                                                href="/dashboard/edit/{{ student }}/t1/">
+                                                Term 1
+                                            </a>
+                                            <a class="dropdown-item"
+                                                href="/dashboard/edit/{{ student }}/t2/">
+                                                Term 2
+                                            </a>
+                                            <a class="dropdown-item"
+                                                href="/dashboard/edit/{{ student }}/t3/">
+                                                Term 3
+                                            </a>
+                                            <a class="dropdown-item"
+                                                href="/dashboard/edit/{{ student }}/t4/">
+                                                Term 4
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
