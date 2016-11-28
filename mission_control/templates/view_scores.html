@@ -2,7 +2,7 @@
 {% block wrapper %}
 {%- if data['scores'] -%}
     <div class="row">
-        <div class="col-md-10 col-centered">
+        <div class="col-md-8 col-centered">
             <table class="table">
             {%- for criteria, score in data['scores'] -%}
                 {%- if len(criteria) == 1 -%}

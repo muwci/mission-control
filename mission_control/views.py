@@ -13,6 +13,7 @@ from mission_control import authenticate
 from rubric.convertor import struct
 from rubric.convertor import rubric_name_map
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """
